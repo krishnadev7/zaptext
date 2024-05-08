@@ -30,7 +30,6 @@ export default function RootLayout({
             </section>
             <Rightsidebar />
           </main>
-          {children}
           <Bottombar />
         </body>
       </html>
