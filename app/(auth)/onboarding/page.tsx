@@ -1,9 +1,10 @@
 import AccountProfile from '@/app/components/forms/AccountProfile'
-import { currentUser } from '@clerk/nextjs/server'
+import { currentUser } from '@clerk/nextjs/server';
 import React from 'react'
 
-const page = () => {
-  const user = currentUser();
+ const page = async() => {
+  const user = await currentUser();
+  if(!user) return null;
 
   const userInfo = {};
 
@@ -11,7 +12,7 @@ const page = () => {
     id: user?.id,
     objectId: userInfo?._id,
     username: userInfo?.username || user?.username,
-    name: userInfo?.name || user?.firstname || "",
+    name: userInfo?.name || user?.firstName || "",
     bio: userInfo?.bio || "",
     image: userInfo?.image || user?.imageUrl
   }

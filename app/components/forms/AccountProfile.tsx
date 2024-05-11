@@ -1,7 +1,7 @@
 "use client";
 import { userValidation } from "@/lib/validations/user";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -32,13 +32,14 @@ interface Props {
 }
 
 function AccountProfile({ user, btnTitle }: Props) {
+  const [file, setFile] = useState<File[]>([]);
   const form = useForm({
     resolver: zodResolver(userValidation),
     defaultValues: {
-      profile_photo: "",
-      name: "",
-      username: "",
-      bio: "",
+      profile_photo: user?.image || "",
+      name: user?.name || "",
+      username: user?.username || "",
+      bio: user?.bio || "",
     },
   });
 
@@ -48,9 +49,28 @@ function AccountProfile({ user, btnTitle }: Props) {
     console.log(values);
   }
 
-  const handleImage = (e: ChangeEvent, fieldChange: (value: string) => void) => {
+  const handleImage = (
+    e: ChangeEvent<HTMLInputElement>,
+    fieldChange: (value: string) => void
+  ) => {
     e.preventDefault();
-  }
+
+    const fileReader = new FileReader();
+
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setFile(Array.from(e.target.files));
+
+      if (!file.type.includes("image")) return;
+
+      fileReader.onload = async (event) => {
+        const imageDataUrl = event.target?.result?.toString() || "";
+        fieldChange(imageDataUrl);
+      };
+
+      fileReader.readAsDataURL(file);
+    }
+  };
 
   return (
     <Form {...form}>
@@ -89,7 +109,7 @@ function AccountProfile({ user, btnTitle }: Props) {
                   accept="image/*"
                   placeholder="Upload a photo"
                   className="account-form_image-input"
-                  onChange={(e)=> handleImage(e,field.onChange)}
+                  onChange={(e) => handleImage(e, field.onChange)}
                 />
               </FormControl>
             </FormItem>
@@ -105,9 +125,9 @@ function AccountProfile({ user, btnTitle }: Props) {
               </FormLabel>
               <FormControl className="flex-1 text-base-semibold text-gray-200">
                 <Input
-                 type="text"
-                 className="account-form_input no-focus"
-                 {...field}
+                  type="text"
+                  className="account-form_input no-focus"
+                  {...field}
                 />
               </FormControl>
             </FormItem>
@@ -123,9 +143,9 @@ function AccountProfile({ user, btnTitle }: Props) {
               </FormLabel>
               <FormControl className="flex-1 text-base-semibold text-gray-200">
                 <Input
-                 type="text"
-                 className="account-form_input no-focus"
-                 {...field}
+                  type="text"
+                  className="account-form_input no-focus"
+                  {...field}
                 />
               </FormControl>
             </FormItem>
@@ -141,15 +161,17 @@ function AccountProfile({ user, btnTitle }: Props) {
               </FormLabel>
               <FormControl className="flex-1 text-base-semibold text-gray-200">
                 <Textarea
-                rows={10}
-                 className="account-form_input no-focus"
-                 {...field}
+                  rows={10}
+                  className="account-form_input no-focus"
+                  {...field}
                 />
               </FormControl>
             </FormItem>
           )}
         />
-        <Button type="submit" className="bg-primary-500">Submit</Button>
+        <Button type="submit" className="bg-primary-500">
+          Submit
+        </Button>
       </form>
     </Form>
   );
