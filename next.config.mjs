@@ -2,7 +2,9 @@
 const nextConfig = {
     experimental: {
         // Verify the correct use of serverActions if using it
-        // serverActions: true,
+        serverActions: {
+            bodySizeLimit: '3mb'
+        },
         serverComponentsExternalPackages: ["mongoose"],
     },
     images: {

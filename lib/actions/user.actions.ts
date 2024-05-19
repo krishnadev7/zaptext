@@ -5,12 +5,12 @@ import User from "../models/user.models";
 import { connectToDb } from "../mongoose";
 
 interface Params{
-  userId: String,
-  username: String,
-  name: String,
-  image: String,
-  bio: String,
-  path: String
+  userId: string,
+  username: string,
+  name: string,
+  image: string,
+  bio: string,
+  path: string
 }
 
 export async function updateUser({

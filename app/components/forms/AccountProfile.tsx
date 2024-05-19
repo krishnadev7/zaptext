@@ -14,14 +14,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
 import { isBase64Image } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
-import { useRouter } from "next/router";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { updateUser } from "@/lib/actions/user.actions";
 
 interface Props {
@@ -38,9 +38,9 @@ interface Props {
 
 function AccountProfile({ user, btnTitle }: Props) {
   const [file, setFile] = useState<File[]>([]);
-  const {startUpload} = useUploadThing("media");
+  const { startUpload } = useUploadThing("media");
   const router = useRouter();
-  const {pathname} = usePathname();
+  const { pathname } = usePathname();
 
   const form = useForm({
     resolver: zodResolver(userValidation),
@@ -70,13 +70,13 @@ function AccountProfile({ user, btnTitle }: Props) {
       name: values.name,
       image: values.profile_photo,
       bio: values.bio,
-      path: pathname
-    })
+      path: pathname,
+    });
 
-    if(pathname === '/profile/edit'){
+    if (pathname === "/profile/edit") {
       router.back();
-    }else{
-      router.push('/');
+    } else {
+      router.push("/");
     }
   };
 
