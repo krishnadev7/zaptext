@@ -1,4 +1,5 @@
 import ThreadCard from "@/app/components/cards/ThreadCard";
+import Comment from "@/app/components/forms/Comment";
 import { fetchThreadById } from "@/lib/actions/thread.actions";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs/server";
@@ -34,6 +35,13 @@ export default async function page({params}:{params: {id: String}}){
               comments={thread.children}
               createdAt={thread.createdAt}
             />
+            </div>
+            <div className="mt-7 text-white ">
+                <Comment
+                    threadId={thread.id}
+                    currentUserImg={user.imageUrl}
+                    currentUserId={JSON.stringify(userInfo._id)}
+                />
             </div>
         </section>
     )
