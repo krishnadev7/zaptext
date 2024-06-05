@@ -19,11 +19,24 @@ export async function createThread({
 }: Params) {
   try {
     connectToDb();
+
+
+    console.log("Thread data", text, author, communityId);
+    console.log("path", path);
+
+    if (!text || !author) {
+      throw new Error("Text and author are required");
+    }
+
     const createThread = await Thread.create({
       text,
       author,
-      community: null,
+      community: communityId,
     });
+
+    if (!createThread) {
+      throw new Error("Failed to create thread");
+    }
 
     // Updating user model
     await User.findByIdAndUpdate(author, {
@@ -120,7 +133,7 @@ export async function commentingToThread(
     // Finding the original Thread
     const originalThread = await Thread.findById(threadId);
 
-    if(!originalThread){
+    if (!originalThread) {
       throw new Error("Thread not found!");
     }
 
@@ -128,24 +141,23 @@ export async function commentingToThread(
     const commentThread = new Thread({
       text: commentText,
       author: userId,
-      parentId: threadId
-    })
+      parentId: threadId,
+    });
 
     const savedThread = await commentThread.save();
 
-      // Ensure originalThread.children is an array
-      if (!Array.isArray(originalThread.children)) {
-        originalThread.children = [];
-      }
+    // Ensure originalThread.children is an array
+    if (!Array.isArray(originalThread.children)) {
+      originalThread.children = [];
+    }
 
-    // updating the original thread 
+    // updating the original thread
     originalThread.children.push(savedThread._id);
 
     //saving original thread
     await originalThread.save();
 
     revalidatePath(path);
-
   } catch (error: any) {
     throw new Error(`Failed to add a comment ${error.message}`);
   }
