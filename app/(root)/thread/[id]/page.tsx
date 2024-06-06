@@ -43,6 +43,22 @@ export default async function page({params}:{params: {id: String}}){
                     currentUserId={JSON.stringify(userInfo._id)}
                 />
             </div>
+            <div className="mt-10">
+                {thread.children.map((childrenItem:any) => (
+                    <ThreadCard 
+                    key={childrenItem._id}
+                    id={childrenItem._id}
+                    currentUserId={user?.id || ""} 
+                    parentId={childrenItem.parentId}
+                    content={childrenItem.text}
+                    author={childrenItem.author}
+                    community={childrenItem.community}
+                    comments={childrenItem.children}
+                    createdAt={childrenItem.createdAt}
+                    isComment
+                  />
+                ))}
+            </div>
         </section>
     )
 }
