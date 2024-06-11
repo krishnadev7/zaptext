@@ -12,7 +12,7 @@ const ProfileHeader = ({accountId,authUserId,name,username,imageUrl,bio}:Params)
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="relative h-20 w-20 object-cover">
-                        <img src={imageUrl} alt="profile image" fill  className="rounded-full object-cover shadow-2xl"/>
+                        <img src={imageUrl} alt="profile image"  className="rounded-full object-cover shadow-2xl"/>
                     </div>
                     <div className="flex-1">
                         <h2 className="text-left text-heading3-bold text-light-1">{name}</h2>

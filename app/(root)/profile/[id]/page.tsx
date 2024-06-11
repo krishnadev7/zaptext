@@ -13,6 +13,7 @@ import Image from "next/image";
 import ThreadsTab from "@/app/components/shared/ThreadsTab";
 
 const page = async ({ params }: { params: { id: string } }) => {
+  
   const user = await currentUser();
 
   if (!user) return null;
