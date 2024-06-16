@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import User from "../models/user.models";
 import { connectToDb } from "../mongoose";
 import Thread from "../models/thread.models";
-import { model } from "mongoose";
+import { FilterQuery, SortOrder, model } from "mongoose";
 
 interface Params {
   userId: string;
@@ -13,6 +13,14 @@ interface Params {
   image: string;
   bio: string;
   path: string;
+}
+
+interface FetchUserParams {
+  userId: string;
+  searchString?: string;
+  pageNumber?: number;
+  pageSize?: number;
+  sortBy?: SortOrder;
 }
 
 export async function updateUser({
@@ -56,11 +64,10 @@ export async function fetchUser(userId: string) {
 }
 
 export async function fetchUserPosts(userId: string) {
-  
   try {
     connectToDb();
 
-     const threads = await User.findOne({ id: userId }).populate({
+    const threads = await User.findOne({ id: userId }).populate({
       path: "threads",
       model: Thread,
       populate: [
@@ -76,8 +83,52 @@ export async function fetchUserPosts(userId: string) {
       ],
     });
     return threads;
-
   } catch (error: any) {
     throw new Error(`Failed to fetch user posts ${error.message}`);
+  }
+}
+
+export async function fetchUsers({
+  userId,
+  searchString = "",
+  pageNumber = 1,
+  pageSize = 20,
+  sortBy = "desc",
+}: FetchUserParams) {
+  try {
+    connectToDb();
+
+    const skipAmout = (pageNumber - 1) * pageSize;
+
+    // lowercasing SearchString
+    const regex = new RegExp(searchString, "i");
+
+    const query: FilterQuery<typeof User> = {
+      id: { $ne: userId },
+    };
+
+    if (searchString.trim() !== "") {
+      query.$or = [
+        { username: { $regex: regex } },
+        { name: { $regex: regex } },
+      ];
+    }
+
+    const sortOptions = { createdAt: sortBy };
+
+    const userQuery = User.find(query)
+      .sort(sortOptions)
+      .skip(skipAmout)
+      .limit(pageSize);
+
+    const totalUsersCount = await User.countDocuments(query);
+
+    const users = await userQuery.exec();
+
+    const isNext = totalUsersCount > skipAmout + users.length;
+
+    return { users, isNext };
+  } catch (error: any) {
+    throw new Error(`Failed to fetch users ${error.message}`);
   }
 }
