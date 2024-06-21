@@ -1,27 +1,28 @@
+import { formatDateString } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
 interface Props {
-  id: String;
-  currentUserId: String;
-  parentId: String;
-  content: String;
+  id: string;
+  currentUserId: string;
+  parentId: string;
+  content: string;
   author: {
-    id: String;
-    name: String;
-    image: String;
+    id: string;
+    name: string;
+    image: string;
   };
   community: {
-    id: String;
-    name: String;
-    image: String;
+    id: string;
+    name: string;
+    image: string;
   } | null;
   comments: {
     author: {
-      image: String;
+      image: string;
     };
   }[];
-  createdAt: String;
+  createdAt: string;
   isComment?: boolean 
 }
 
@@ -96,6 +97,20 @@ const ThreadCard = ({
           </div>
         </div>
       </div>
+      {!isComment && community && (
+        <Link href={`/communities/${community.id}`} className="mt-5 flex items-center">
+          <p className="text-subtle-medium text-gray-1">
+            {formatDateString(createdAt)} - {community.name} Community
+          </p>
+          <Image
+              src={community.image}
+              alt="community-name"
+              width={14}
+              height={14}
+              className="rounded-full object-cover ml-1"
+          />
+        </Link>
+      )}
     </article>
   );
 };
